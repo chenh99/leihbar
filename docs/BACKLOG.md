@@ -94,6 +94,40 @@
 
 **Fertig, wenn:** drei Vorschläge erzeugt, Rate Limit ausgelöst, Netzwerk-Tab ohne Key.
 
+## Ergänzungen aus dem Brainstorming (Tag 2, nach Issue 7)
+
+### ⬜ Issue 9 — Registrieren nur mit Uni-E-Mail
+**Ziel:** Nur Studierende mit Hochschul-Adresse können sich registrieren – damit Leihbar wie versprochen nicht für Außenstehende offen ist.
+**Nicht im Umfang:** Bestätigungs-Mail-Design, Liste aller erlaubten Hochschulen pflegen, Prüfung, ob die Person wirklich eingeschrieben ist.
+**Akzeptanzkriterien:**
+- Gegeben ich registriere mich mit einer Uni-Adresse (Endung festgelegt in `docs/ENTSCHEIDUNGEN.md`), dann klappt die Registrierung.
+- Gegeben ich registriere mich mit einer anderen Adresse (z. B. `…@gmail.com`), dann sehe ich eine verständliche Meldung, welche Adresse nötig ist, und es wird kein Konto angelegt.
+- Gegeben ich sehe das Registrierungsformular, dann steht dort ein Hinweis, dass eine Uni-E-Mail nötig ist.
+
+**Fertig, wenn:** je ein Versuch mit Uni-Adresse und mit Fremdadresse im Browser; im Supabase-Dashboard unter Authentication entsteht nur im ersten Fall ein Konto.
+
+### ⬜ Issue 10 — Anfragen annehmen oder ablehnen
+**Ziel:** Besitzer*innen sehen die Anfragen zu ihren Gegenständen und nehmen sie an oder lehnen sie ab – damit Anfragende wissen, ob sie den Gegenstand bekommen.
+**Nicht im Umfang:** Benachrichtigung per E-Mail, Kalender, mehrere Anfragen automatisch ablehnen, Zeitraum.
+**Akzeptanzkriterien:**
+- Gegeben ich bin angemeldet und habe einen Gegenstand angeboten, wenn jemand ihn angefragt hat, dann sehe ich die Anfrage auf einer Seite `/anfragen-an-mich` mit „Annehmen“ und „Ablehnen“.
+- Gegeben ich klicke „Annehmen“ oder „Ablehnen“, dann ändert sich der Status der Anfrage sichtbar, und die anfragende Person sieht ihn unter `/meine-anfragen`.
+- Gegeben ich habe keine Anfragen, dann sehe ich einen Hinweis mit Link zur Liste.
+- Gegeben ich bin nicht der*die Besitzer*in eines Gegenstands, dann sehe ich dessen Anfragen nicht und kann sie nicht ändern (Row Level Security).
+
+**Fertig, wenn:** mit zwei Testkonten: Konto A bietet an, Konto B fragt an, A nimmt an, B sieht „angenommen“; zweite Anfrage abgelehnt; Konto B ruft `/anfragen-an-mich` auf und sieht nichts von A.
+
+### ⬜ Issue 11 — Kontakt nach Zusage
+**Ziel:** Sobald eine Anfrage angenommen ist, sehen beide Seiten die Uni-E-Mail der anderen Person – damit sie Übergabe und Pfand persönlich klären können.
+**Nicht im Umfang:** Chat in der App, Bezahlung, Rückgabe-Erinnerung.
+**Akzeptanzkriterien:**
+- Gegeben meine Anfrage ist angenommen, dann sehe ich unter `/meine-anfragen` die E-Mail der Besitzerin als Link zum Mailen.
+- Gegeben ich habe eine Anfrage angenommen, dann sehe ich unter `/anfragen-an-mich` die E-Mail der anfragenden Person.
+- Gegeben eine Anfrage ist offen oder abgelehnt, dann wird keine E-Mail-Adresse angezeigt.
+- Gegeben ich bin an einer Anfrage nicht beteiligt, dann kann ich die E-Mail-Adressen darin nicht abrufen.
+
+**Fertig, wenn:** mit zwei Testkonten: offene Anfrage zeigt keine Adresse, nach „Annehmen“ sehen beide die jeweils andere; eine dritte Person sieht keine.
+
 ## Später / Ideen (nicht im MVP)
 - Anfrage annehmen oder ablehnen (Besitzer*in)
 - Kalender mit freien Tagen
