@@ -3,15 +3,14 @@ import { Hand, Recycle, Search } from "lucide-react";
 import FeatureCard from "@/components/FeatureCard";
 import GegenstandKarte from "@/components/GegenstandKarte";
 import KategorieFilter from "@/components/KategorieFilter";
-import { gegenstaende, kategorien, type Kategorie } from "@/data/gegenstaende";
+import { kategorien, type Kategorie } from "@/data/gegenstaende";
+import { holeVerfuegbare } from "@/lib/gegenstaende";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const { kategorie } = await searchParams;
   // Unbekannte oder mehrfache Werte in der Adresse zählen als „Alle“.
   const aktiv = kategorien.find((k): k is Kategorie => k === kategorie);
-  const verfuegbare = gegenstaende.filter(
-    (gegenstand) => gegenstand.verfuegbar && (!aktiv || gegenstand.kategorie === aktiv),
-  );
+  const verfuegbare = await holeVerfuegbare(aktiv);
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-12 sm:block">
@@ -33,9 +32,12 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           >
             Gegenstände ansehen
           </a>
-          <span className="rounded-xl border border-border px-5 py-3 text-muted">
-            Anbieten – kommt an Tag 2
-          </span>
+          <Link
+            href="/anbieten"
+            className="rounded-xl border border-border px-5 py-3 font-medium text-foreground transition hover:bg-accent-soft"
+          >
+            Gegenstand anbieten
+          </Link>
         </div>
       </section>
 

@@ -1,26 +1,22 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { gegenstaende } from "@/data/gegenstaende";
+import GegenstandBild from "@/components/GegenstandBild";
+import { holeGegenstand } from "@/lib/gegenstaende";
 import { preisText } from "@/lib/format";
-
-function findeGegenstand(id: string) {
-  return gegenstaende.find((gegenstand) => gegenstand.id === id);
-}
 
 export async function generateMetadata({
   params,
 }: PageProps<"/gegenstand/[id]">): Promise<Metadata> {
   const { id } = await params;
-  const gegenstand = findeGegenstand(id);
+  const gegenstand = await holeGegenstand(id);
   return { title: gegenstand ? gegenstand.titel : "Nicht gefunden" };
 }
 
 export default async function GegenstandSeite({ params }: PageProps<"/gegenstand/[id]">) {
   const { id } = await params;
-  const gegenstand = findeGegenstand(id);
+  const gegenstand = await holeGegenstand(id);
   if (!gegenstand) notFound();
 
   const { titel, kategorie, beschreibung, besitzer, ort, preisProTag, verfuegbar, bild } =
@@ -37,16 +33,13 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
       </Link>
 
       <article className="grid gap-6 md:grid-cols-2 md:gap-10">
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-accent-soft">
-          <Image
-            src={bild}
-            alt={titel}
-            fill
-            sizes="(min-width: 768px) 480px, 100vw"
-            className="object-cover"
-            priority
-          />
-        </div>
+        <GegenstandBild
+          bild={bild}
+          alt={titel}
+          sizes="(min-width: 768px) 480px, 100vw"
+          prioritaet
+          className="rounded-2xl border border-border"
+        />
 
         <div className="flex flex-col gap-4">
           <p className="w-fit rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-foreground">
