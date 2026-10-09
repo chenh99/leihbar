@@ -1,6 +1,8 @@
 // Abfragen für Anfragen aus der Supabase-Tabelle `requests`.
 
 import { createClient } from "@/lib/supabase/server";
+import { spalten, zuGegenstand, type ItemZeile } from "@/lib/gegenstaende";
+import type { Gegenstand } from "@/data/gegenstaende";
 
 export type AnfrageStand = {
   /** Wie viele Personen den Gegenstand angefragt haben. */
@@ -33,4 +35,22 @@ export async function holeAnfrageStand(itemId: string): Promise<AnfrageStand> {
   }
 
   return { anzahl: count ?? 0, angefragt };
+}
+
+/** Die Gegenstände, die die angemeldete Person angefragt hat – die neueste Anfrage zuerst. */
+export async function holeMeineAnfragen(): Promise<Gegenstand[]> {
+  const supabase = await createClient();
+  const { data: sitzung } = await supabase.auth.getClaims();
+  const userId = sitzung?.claims?.sub;
+  if (!userId) return [];
+
+  const { data, error } = await supabase
+    .from("requests")
+    .select(`created_at, items(${spalten})`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`Anfragen konnten nicht geladen werden: ${error.message}`);
+
+  return (data as unknown as { items: ItemZeile | null }[])
+    .flatMap((zeile) => (zeile.items ? [zuGegenstand(zeile.items)] : []));
 }

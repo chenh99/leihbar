@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import GegenstandKarte from "@/components/GegenstandKarte";
+import { holeMeineAnfragen } from "@/lib/anfragen";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Meine Anfragen" };
@@ -10,10 +13,31 @@ export default async function MeineAnfragenSeite() {
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) redirect("/anmelden?weiter=%2Fmeine-anfragen");
 
+  const anfragen = await holeMeineAnfragen();
+
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-12">
       <h1 className="mb-2 text-3xl font-bold">Meine Anfragen</h1>
-      <p className="max-w-xl text-lg text-muted">Hier siehst du bald, was du angefragt hast.</p>
+      {anfragen.length > 0 ? (
+        <>
+          <h2 className="sr-only">Deine angefragten Gegenstände</h2>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {anfragen.map((gegenstand, index) => (
+              <li key={gegenstand.id}>
+                <GegenstandKarte gegenstand={gegenstand} prioritaet={index === 0} />
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p className="max-w-xl text-lg text-muted">
+          Du hast noch nichts angefragt.{" "}
+          <Link href="/#gegenstaende" className="inline-flex min-h-11 items-center font-medium text-foreground underline">
+            Schau dir an, was gerade verfügbar ist
+          </Link>
+          .
+        </p>
+      )}
     </main>
   );
 }
