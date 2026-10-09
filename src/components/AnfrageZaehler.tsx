@@ -42,8 +42,8 @@ export default function AnfrageZaehler({
   }, [itemId]);
 
   return (
-    <p className="text-muted">
-      Anfragen: <span className="font-medium text-foreground">{anzahl}</span>
+    <p className="text-tinte-gedaempft">
+      Anfragen bisher: <span className="font-medium text-tinte">{anzahl}</span>
     </p>
   );
 }

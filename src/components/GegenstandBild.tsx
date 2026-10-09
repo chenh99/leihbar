@@ -13,12 +13,12 @@ type Props = {
 /** Bild mit festem Seitenverhältnis 4:3 – oder ein Platzhalter für Gegenstände ohne Foto. */
 export default function GegenstandBild({ bild, alt, sizes, prioritaet = false, className = "" }: Props) {
   return (
-    <div className={`relative aspect-[4/3] w-full overflow-hidden bg-accent-soft ${className}`}>
+    <div className={`relative aspect-[4/3] w-full overflow-hidden bg-tinte/10 ${className}`}>
       {bild ? (
         <Image src={bild} alt={alt} fill sizes={sizes} className="object-cover" priority={prioritaet} />
       ) : (
-        <div className="flex size-full items-center justify-center text-muted">
-          <Package aria-hidden className="size-12" />
+        <div className="flex size-full items-center justify-center text-tinte-gedaempft">
+          <Package aria-hidden className="size-10" />
           {alt && <span className="sr-only">Kein Bild vorhanden</span>}
         </div>
       )}

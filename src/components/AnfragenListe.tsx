@@ -13,20 +13,22 @@ export default function AnfragenListe({
   aktion: (formData: FormData) => Promise<void>;
 }) {
   return (
-    <section className="mt-10 border-t border-border pt-6">
-      <h2 className="mb-4 text-xl font-semibold">Anfragen zu deinem Gegenstand</h2>
+    <section className="mx-auto mt-14 max-w-4xl">
+      <h2 className="mb-6 font-serif text-2xl text-wand-text">Anfragen zu deinem Gegenstand</h2>
       {anfragen.length === 0 ? (
-        <p className="text-muted">Noch hat niemand diesen Gegenstand angefragt.</p>
+        <p className="text-wand-text-gedaempft">Noch hat niemand diesen Gegenstand angefragt.</p>
       ) : (
-        <ul className="space-y-3">
-          {anfragen.map((anfrage) => (
+        <ul className="space-y-5">
+          {anfragen.map((anfrage, index) => (
             <li
               key={anfrage.id}
-              className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+              className={`zettel nadel flex flex-col gap-4 p-4 pt-5 sm:flex-row sm:items-center sm:justify-between ${
+                index % 2 ? "rotate-[0.5deg]" : "-rotate-[0.5deg]"
+              }`}
             >
-              <div className="flex min-w-0 flex-col gap-2">
+              <div className="flex min-w-0 flex-col gap-3">
                 <p className="break-all">
-                  <span className="text-muted">Angefragt von: </span>
+                  <span className="text-tinte-gedaempft">Angefragt von: </span>
                   {anfrage.email}
                 </p>
                 <AnfrageStatus status={anfrage.status} />
@@ -39,7 +41,7 @@ export default function AnfragenListe({
                   name="status"
                   value="angenommen"
                   disabled={anfrage.status === "angenommen"}
-                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2 font-semibold text-white disabled:opacity-50 sm:flex-none"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 bg-tinte px-4 py-2 font-semibold text-zettel disabled:opacity-40 sm:flex-none"
                 >
                   <Check aria-hidden className="size-5" />
                   Annehmen
@@ -49,7 +51,7 @@ export default function AnfragenListe({
                   name="status"
                   value="abgelehnt"
                   disabled={anfrage.status === "abgelehnt"}
-                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background px-4 py-2 font-semibold text-foreground disabled:opacity-50 sm:flex-none"
+                  className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 border-2 border-tinte px-4 py-2 font-semibold disabled:opacity-40 sm:flex-none"
                 >
                   <X aria-hidden className="size-5" />
                   Ablehnen

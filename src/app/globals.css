@@ -1,38 +1,95 @@
 @import "tailwindcss";
 
+/* Richtung „Schwarzes Brett“: eine warm-hellgraue, fast weiße Wand, auf der Papierzettel hängen. */
 :root {
-  --background: #fafaf7;
-  --foreground: #16161a;
-  --accent: #d6401f;
-  --accent-soft: #fde8e3;
-  --muted: #6b6b76;
-  --card: #ffffff;
-  --border: #e6e4de;
-  --danger: #b3261e;
+  --wand: #f3f2ee;
+  --wand-dunkel: #e9e7e2;
+  --wand-schatten: #a3a098;
+  --wand-linie: #6e6c66;
+  --wand-text: #1b1b18;
+  --wand-text-gedaempft: #4d4b46;
+  --zettel: #ffffff;
+  --zettel-mint: #bfe8d2;
+  --tinte: #1b1b18;
+  --tinte-gedaempft: #57574e;
+  --pin: #ff5a1f;
+  --gefahr: #b3261e;
+  --zusage: #1d6b43;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-muted: var(--muted);
-  --color-card: var(--card);
-  --color-border: var(--border);
-  --color-danger: var(--danger);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-wand: var(--wand);
+  --color-wand-dunkel: var(--wand-dunkel);
+  --color-wand-schatten: var(--wand-schatten);
+  --color-wand-linie: var(--wand-linie);
+  --color-wand-text: var(--wand-text);
+  --color-wand-text-gedaempft: var(--wand-text-gedaempft);
+  --color-zettel: var(--zettel);
+  --color-zettel-mint: var(--zettel-mint);
+  --color-tinte: var(--tinte);
+  --color-tinte-gedaempft: var(--tinte-gedaempft);
+  --color-pin: var(--pin);
+  --color-gefahr: var(--gefahr);
+  --color-zusage: var(--zusage);
+  --font-sans: var(--font-instrument), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-young), ui-serif, serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--wand);
+  color: var(--wand-text);
   font-family: var(--font-sans);
+  /* Fokus-Rahmen in Tinte – auf der Wand und auf den Zetteln gut sichtbar. */
+  --fokus: var(--tinte);
 }
 
 /* Sichtbarer Rahmen für alle, die mit der Tastatur navigieren. Nicht entfernen, nur ersetzen. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--fokus);
   outline-offset: 2px;
+}
+
+@layer components {
+  /* Ein Papierzettel an der Wand: dunkle Schrift, harte graue Kante statt weichem Schatten. */
+  .zettel {
+    --fokus: var(--tinte);
+    position: relative;
+    background: var(--zettel);
+    color: var(--tinte);
+    box-shadow: 3px 4px 0 var(--wand-schatten);
+  }
+
+  .zettel-mint {
+    background: var(--zettel-mint);
+  }
+
+  /* Die rote Stecknadel oben in der Mitte. */
+  .nadel::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 35%, #ffb08f 0 2px, var(--pin) 3px);
+    box-shadow: 1px 2px 0 var(--wand-schatten);
+  }
+
+  /* Der Abreißstreifen: gestrichelte Perforation oben, kurze Schnitte unten wie bei Aushängen. */
+  .abreissstreifen {
+    border-top: 2px dashed color-mix(in srgb, var(--tinte) 35%, transparent);
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0 calc(25% - 1px),
+      color-mix(in srgb, var(--tinte) 30%, transparent) calc(25% - 1px) 25%
+    );
+    background-position: bottom;
+    background-size: 100% 8px;
+    background-repeat: no-repeat;
+  }
 }
 
 /* Wer in den Systemeinstellungen „Bewegung reduzieren“ gewählt hat, bekommt keine Animationen. */

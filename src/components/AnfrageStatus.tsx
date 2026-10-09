@@ -1,23 +1,17 @@
 import type { AnfrageStatus as Status } from "@/lib/anfragen";
 
-const texte: Record<Status, string> = {
-  offen: "offen",
-  angenommen: "angenommen",
-  abgelehnt: "abgelehnt",
-};
-
 const farben: Record<Status, string> = {
-  offen: "border border-border bg-background text-foreground",
-  angenommen: "bg-foreground text-background",
-  abgelehnt: "border border-danger text-danger",
+  offen: "border-tinte text-tinte",
+  angenommen: "border-zusage text-zusage",
+  abgelehnt: "border-gefahr text-gefahr",
 };
 
-/** Kleines Etikett mit dem Stand einer Anfrage. */
+/** Der Stand einer Anfrage als Stempel: schräg, mit Rahmen in der Farbe des Status. */
 export default function AnfrageStatus({ status }: { status: Status }) {
   return (
-    <p className={`w-fit rounded-full px-3 py-1 text-sm font-medium ${farben[status]}`}>
+    <p className={`w-fit -rotate-6 border-2 bg-zettel px-2 py-0.5 font-serif text-base ${farben[status]}`}>
       <span className="sr-only">Status: </span>
-      {texte[status]}
+      {status}
     </p>
   );
 }

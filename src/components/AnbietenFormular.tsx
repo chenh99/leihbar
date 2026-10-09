@@ -6,7 +6,7 @@ import { gegenstandAnbieten } from "@/app/anbieten/actions";
 import { startZustand, type FormularFeld } from "@/lib/anbieten";
 
 const feldKlassen =
-  "min-h-11 w-full rounded-xl border bg-card px-4 py-2 text-base text-foreground";
+  "min-h-11 w-full border-2 bg-zettel px-4 py-2 text-base text-tinte";
 
 export default function AnbietenFormular() {
   const [zustand, formAction, laeuft] = useActionState(gegenstandAnbieten, startZustand);
@@ -19,10 +19,10 @@ export default function AnbietenFormular() {
     "aria-invalid": fehler[name] ? true : undefined,
     "aria-describedby": fehler[name] ? `${name}-fehler` : undefined,
   });
-  const rahmen = (name: FormularFeld) => (fehler[name] ? "border-danger" : "border-border");
+  const rahmen = (name: FormularFeld) => (fehler[name] ? "border-gefahr" : "border-tinte/60");
   const fehlerText = (name: FormularFeld) =>
     fehler[name] && (
-      <p id={`${name}-fehler`} className="mt-1 text-sm font-medium text-danger">
+      <p id={`${name}-fehler`} className="mt-1 text-sm font-medium text-gefahr">
         {fehler[name]}
       </p>
     );
@@ -34,7 +34,7 @@ export default function AnbietenFormular() {
       key={JSON.stringify(zustand)}
       action={formAction}
       noValidate
-      className="flex max-w-xl flex-col gap-5"
+      className="zettel nadel flex max-w-xl -rotate-[0.4deg] flex-col gap-5 p-5 pt-7 sm:p-8"
     >
       <div>
         <label htmlFor="titel" className="mb-1 block font-medium">
@@ -91,7 +91,7 @@ export default function AnbietenFormular() {
           defaultValue={werte.preis}
           className={`${feldKlassen} ${rahmen("preis")}`}
         />
-        <p className="mt-1 text-sm text-muted">Gib 0 ein, wenn du den Gegenstand gratis verleihst.</p>
+        <p className="mt-1 text-sm text-tinte-gedaempft">Gib 0 ein, wenn du den Gegenstand gratis verleihst.</p>
         {fehlerText("preis")}
       </div>
 
@@ -99,11 +99,11 @@ export default function AnbietenFormular() {
         <label htmlFor="besitzer" className="mb-1 block font-medium">
           Dein Name (optional)
         </label>
-        <input id="besitzer" name="besitzer" type="text" defaultValue={werte.besitzer} className={`${feldKlassen} border-border`} />
+        <input id="besitzer" name="besitzer" type="text" defaultValue={werte.besitzer} className={`${feldKlassen} border-tinte/60`} />
       </div>
 
       {meldung && (
-        <p role="alert" className="font-medium text-danger">
+        <p role="alert" className="font-medium text-gefahr">
           {meldung}
         </p>
       )}
@@ -111,7 +111,7 @@ export default function AnbietenFormular() {
       <button
         type="submit"
         disabled={laeuft}
-        className="min-h-11 w-full rounded-xl bg-accent px-5 font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60 sm:w-fit"
+        className="min-h-11 w-full bg-tinte px-5 font-semibold text-zettel disabled:opacity-60 sm:w-fit"
       >
         {laeuft ? "Wird gespeichert …" : "Gegenstand anbieten"}
       </button>

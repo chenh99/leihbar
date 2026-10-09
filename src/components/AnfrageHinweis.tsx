@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Inbox } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { navKlassen } from "@/components/NavLink";
 import { createClient } from "@/lib/supabase/client";
 
 /** Symbol im Header mit der Zahl offener Anfragen auf meine Gegenstände; aktualisiert sich live. */
@@ -13,6 +15,7 @@ export default function AnfrageHinweis({
   userId: string;
   anzahl: number;
 }) {
+  const aktiv = usePathname() === "/anfragen-an-mich";
   const [anzahl, setAnzahl] = useState(startwert);
   const [letzterStartwert, setLetzterStartwert] = useState(startwert);
 
@@ -50,13 +53,14 @@ export default function AnfrageHinweis({
     <Link
       href="/anfragen-an-mich"
       aria-label={anzahl > 0 ? `Anfragen an mich, ${anzahl} offen` : "Anfragen an mich"}
-      className="relative flex min-h-11 min-w-11 items-center justify-center hover:text-foreground"
+      aria-current={aktiv ? "page" : undefined}
+      className={`relative ${navKlassen(aktiv)}`}
     >
       <Inbox aria-hidden className="size-5" />
       {anzahl > 0 && (
         <span
           aria-hidden
-          className="absolute right-0 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-semibold text-white"
+          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-zettel-mint px-1 text-xs font-semibold text-tinte"
         >
           {anzahl}
         </span>

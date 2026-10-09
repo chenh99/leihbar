@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { LayoutGrid, LogIn, LogOut, SquarePlus } from "lucide-react";
 import { abmelden } from "@/app/anmelden/actions";
 import AnfrageHinweis from "@/components/AnfrageHinweis";
+import Logo from "@/components/Logo";
+import NavLink from "@/components/NavLink";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Header() {
@@ -21,40 +24,45 @@ export default async function Header() {
     offen = count ?? 0;
   }
 
+  const icon = "size-5 shrink-0";
+
   return (
-    <header className="border-b border-border bg-card/80 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="flex min-h-11 items-center gap-2 font-semibold">
-          <span className="inline-block h-3 w-3 rounded-full bg-accent" />
-          Leihbar
+    // Die Leiste ist der hellgraue Rahmen der Pinnwand.
+    <header className="border-b-[6px] border-wand-schatten bg-wand-dunkel text-wand-text">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2">
+        <Link href="/" className="flex min-h-11 items-center">
+          <Logo />
         </Link>
-        <nav aria-label="Hauptnavigation" className="flex items-center gap-3 text-sm text-muted sm:gap-4">
-          {/* Am Handy ist im Header kein Platz; die Liste erreicht man über das Logo. */}
-          <Link href="/#gegenstaende" className="hidden min-h-11 items-center hover:text-foreground sm:flex">
+        <nav aria-label="Hauptnavigation" className="flex items-center gap-1 text-sm sm:gap-3">
+          <NavLink href="/#gegenstaende" icon={<LayoutGrid aria-hidden className={icon} />}>
             Gegenstände
-          </Link>
-          <Link href="/anbieten" className="flex min-h-11 items-center hover:text-foreground">
+          </NavLink>
+          <NavLink href="/anbieten" icon={<SquarePlus aria-hidden className={icon} />}>
             Anbieten
-          </Link>
+          </NavLink>
           {angemeldet ? (
             <>
               {userId && <AnfrageHinweis userId={userId} anzahl={offen} />}
               {email && (
                 // Am Handy ist dafür kein Platz, damit der Header einzeilig bleibt.
-                <span className="hidden max-w-48 truncate sm:inline" title={email}>
+                <span className="hidden max-w-48 truncate text-wand-text-gedaempft lg:inline" title={email}>
                   {email}
                 </span>
               )}
               <form action={abmelden}>
-                <button type="submit" className="flex min-h-11 items-center hover:text-foreground">
-                  Abmelden
+                <button
+                  type="submit"
+                  className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-2 text-wand-text-gedaempft hover:text-wand-text"
+                >
+                  <LogOut aria-hidden className={icon} />
+                  <span className="sr-only sm:not-sr-only">Abmelden</span>
                 </button>
               </form>
             </>
           ) : (
-            <Link href="/anmelden" className="flex min-h-11 items-center hover:text-foreground">
+            <NavLink href="/anmelden" icon={<LogIn aria-hidden className={icon} />} textAmHandy>
               Anmelden
-            </Link>
+            </NavLink>
           )}
         </nav>
       </div>
