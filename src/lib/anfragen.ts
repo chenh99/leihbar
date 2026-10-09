@@ -92,3 +92,27 @@ export async function holeAnfragenZuGegenstand(itemId: string): Promise<AnfrageA
   if (error) throw new Error(`Anfragen konnten nicht geladen werden: ${error.message}`);
   return data as AnfrageAnMich[];
 }
+
+export type OffeneAnfrage = {
+  id: string;
+  email: string;
+  created_at: string;
+  items: { id: string; titel: string };
+};
+
+/** Alle offenen Anfragen auf Gegenstände der angemeldeten Person – die älteste zuerst. */
+export async function holeOffeneAnfragen(): Promise<OffeneAnfrage[]> {
+  const supabase = await createClient();
+  const { data: sitzung } = await supabase.auth.getClaims();
+  const userId = sitzung?.claims?.sub;
+  if (!userId) return [];
+
+  const { data, error } = await supabase
+    .from("requests")
+    .select("id, email, created_at, items!inner(id, titel, owner_id)")
+    .eq("status", "offen")
+    .eq("items.owner_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(`Offene Anfragen konnten nicht geladen werden: ${error.message}`);
+  return data as unknown as OffeneAnfrage[];
+}

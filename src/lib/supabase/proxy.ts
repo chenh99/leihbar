@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Seiten, die nur Angemeldete sehen dürfen.
-const geschuetzt = ["/meine-anfragen", "/anbieten"];
+const geschuetzt = ["/meine-anfragen", "/anfragen-an-mich", "/anbieten"];
 
 // Frischt die Sitzung bei jeder Anfrage auf und leitet Nicht-Angemeldete zur Anmeldung.
 export async function sitzungAufrufen(request: NextRequest) {

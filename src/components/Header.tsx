@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { abmelden } from "@/app/anmelden/actions";
+import AnfrageHinweis from "@/components/AnfrageHinweis";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Header() {
@@ -7,6 +8,18 @@ export default async function Header() {
   const { data } = await supabase.auth.getClaims();
   const email = typeof data?.claims?.email === "string" ? data.claims.email : null;
   const angemeldet = Boolean(data?.claims);
+  const userId = data?.claims?.sub;
+
+  // Offene Anfragen auf meine Gegenstände (die Datenbank zeigt nur, was ich lesen darf).
+  let offen = 0;
+  if (userId) {
+    const { count } = await supabase
+      .from("requests")
+      .select("id, items!inner(owner_id)", { count: "exact", head: true })
+      .eq("status", "offen")
+      .eq("items.owner_id", userId);
+    offen = count ?? 0;
+  }
 
   return (
     <header className="border-b border-border bg-card/80 backdrop-blur">
@@ -15,7 +28,7 @@ export default async function Header() {
           <span className="inline-block h-3 w-3 rounded-full bg-accent" />
           Leihbar
         </Link>
-        <nav aria-label="Hauptnavigation" className="flex items-center gap-4 text-sm text-muted">
+        <nav aria-label="Hauptnavigation" className="flex items-center gap-3 text-sm text-muted sm:gap-4">
           {/* Am Handy ist im Header kein Platz; die Liste erreicht man über das Logo. */}
           <Link href="/#gegenstaende" className="hidden min-h-11 items-center hover:text-foreground sm:flex">
             Gegenstände
@@ -25,8 +38,10 @@ export default async function Header() {
           </Link>
           {angemeldet ? (
             <>
+              {userId && <AnfrageHinweis userId={userId} anzahl={offen} />}
               {email && (
-                <span className="max-w-24 truncate sm:max-w-48" title={email}>
+                // Am Handy ist dafür kein Platz, damit der Header einzeilig bleibt.
+                <span className="hidden max-w-48 truncate sm:inline" title={email}>
                   {email}
                 </span>
               )}
