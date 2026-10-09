@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { preisText } from "@/lib/format";
 import type { Gegenstand } from "@/data/gegenstaende";
 
@@ -9,10 +10,10 @@ type Props = {
 };
 
 export default function GegenstandKarte({ gegenstand, prioritaet = false }: Props) {
-  const { titel, kategorie, besitzer, ort, preisProTag, bild } = gegenstand;
+  const { id, titel, kategorie, besitzer, ort, preisProTag, bild } = gegenstand;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition hover:shadow-md">
       <div className="relative aspect-[4/3] w-full bg-accent-soft">
         <Image
           src={bild}
@@ -28,7 +29,12 @@ export default function GegenstandKarte({ gegenstand, prioritaet = false }: Prop
           <span className="sr-only">Kategorie: </span>
           {kategorie}
         </p>
-        <h3 className="text-lg font-semibold leading-snug">{titel}</h3>
+        <h3 className="text-lg font-semibold leading-snug">
+          {/* Der Link deckt die ganze Karte ab (after:absolute), so ist sie überall antippbar. */}
+          <Link href={`/gegenstand/${id}`} className="after:absolute after:inset-0">
+            {titel}
+          </Link>
+        </h3>
         <p className="font-medium">{preisText(preisProTag)}</p>
         <dl className="mt-auto space-y-1 pt-2 text-sm text-muted">
           <div className="flex gap-1">
