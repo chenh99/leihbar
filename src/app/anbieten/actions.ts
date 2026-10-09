@@ -40,7 +40,11 @@ export async function gegenstandAnbieten(
   if (Object.keys(fehler).length > 0) return { fehler, werte };
 
   const supabase = await createClient();
+  const { data: sitzung } = await supabase.auth.getClaims();
+  if (!sitzung?.claims) redirect("/anmelden?weiter=%2Fanbieten");
+
   const { error } = await supabase.from("items").insert({
+    owner_id: sitzung.claims.sub,
     titel: werte.titel,
     kategorie: werte.kategorie,
     beschreibung: werte.beschreibung,
