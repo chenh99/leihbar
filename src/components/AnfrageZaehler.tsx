@@ -24,19 +24,16 @@ export default function AnfrageZaehler({
     const supabase = createClient();
 
     // Immer neu zählen statt hoch- oder runterzählen: So wird nichts doppelt gezählt.
-    // Beim Zurückziehen nennt die Datenbank nur die Anfrage-ID, nicht den Gegenstand,
-    // darum hören wir auf alle Änderungen und zählen für diesen Gegenstand neu.
+    // Die Datenbank schickt bei jeder neuen oder zurückgezogenen Anfrage ein Signal
+    // (nur mit der Gegenstands-ID); die Zahl holen wir dann über die Zähl-Funktion.
     async function neuZaehlen() {
-      const { count } = await supabase
-        .from("requests")
-        .select("id", { count: "exact", head: true })
-        .eq("item_id", itemId);
-      if (count !== null) setAnzahl(count);
+      const { data } = await supabase.rpc("anzahl_anfragen", { p_item_id: itemId });
+      if (typeof data === "number") setAnzahl(data);
     }
 
     const kanal = supabase
       .channel(`anfragen-${itemId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "requests" }, neuZaehlen)
+      .on("broadcast", { event: "geaendert" }, neuZaehlen)
       .subscribe();
 
     return () => {

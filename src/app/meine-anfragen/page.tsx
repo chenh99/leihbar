@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import AnfrageStatus from "@/components/AnfrageStatus";
 import GegenstandKarte from "@/components/GegenstandKarte";
 import { holeMeineAnfragen } from "@/lib/anfragen";
 import { createClient } from "@/lib/supabase/server";
@@ -22,8 +23,9 @@ export default async function MeineAnfragenSeite() {
         <>
           <h2 className="sr-only">Deine angefragten Gegenstände</h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {anfragen.map((gegenstand, index) => (
-              <li key={gegenstand.id}>
+            {anfragen.map(({ gegenstand, status }, index) => (
+              <li key={gegenstand.id} className="flex flex-col gap-2">
+                <AnfrageStatus status={status} />
                 <GegenstandKarte gegenstand={gegenstand} prioritaet={index === 0} />
               </li>
             ))}

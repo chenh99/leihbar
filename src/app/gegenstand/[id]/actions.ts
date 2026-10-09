@@ -29,3 +29,21 @@ export async function anfrageUmschalten(formData: FormData) {
 
   revalidatePath(`/gegenstand/${itemId}`);
 }
+
+/** Die Besitzer*in nimmt eine Anfrage an oder lehnt sie ab. Die Datenbank prüft, dass der Gegenstand ihr gehört. */
+export async function anfrageBeantworten(formData: FormData) {
+  const anfrageId = formData.get("anfrageId");
+  const itemId = formData.get("itemId");
+  const status = formData.get("status");
+  if (typeof anfrageId !== "string" || typeof itemId !== "string") return;
+  if (status !== "angenommen" && status !== "abgelehnt") return;
+
+  const supabase = await createClient();
+  const { data: sitzung } = await supabase.auth.getClaims();
+  if (!sitzung?.claims) redirect(`/anmelden?weiter=${encodeURIComponent(`/gegenstand/${itemId}`)}`);
+
+  await supabase.from("requests").update({ status }).eq("id", anfrageId);
+
+  revalidatePath(`/gegenstand/${itemId}`);
+  revalidatePath("/meine-anfragen");
+}

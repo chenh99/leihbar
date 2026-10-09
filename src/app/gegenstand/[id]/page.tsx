@@ -6,9 +6,10 @@ import GegenstandBild from "@/components/GegenstandBild";
 import { holeGegenstand } from "@/lib/gegenstaende";
 import AnfrageButton from "@/components/AnfrageButton";
 import AnfrageZaehler from "@/components/AnfrageZaehler";
-import { holeAnfrageStand } from "@/lib/anfragen";
+import AnfragenListe from "@/components/AnfragenListe";
+import { holeAnfrageStand, holeAnfragenZuGegenstand, istBesitzerin } from "@/lib/anfragen";
 import { preisText } from "@/lib/format";
-import { anfrageUmschalten } from "./actions";
+import { anfrageBeantworten, anfrageUmschalten } from "./actions";
 
 export async function generateMetadata({
   params,
@@ -24,6 +25,8 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
   if (!gegenstand) notFound();
 
   const { anzahl, angefragt } = await holeAnfrageStand(id);
+  const eigener = await istBesitzerin(id);
+  const anfragen = eigener ? await holeAnfragenZuGegenstand(id) : [];
 
   const { titel, kategorie, beschreibung, besitzer, ort, preisProTag, verfuegbar, bild } =
     gegenstand;
@@ -76,6 +79,8 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
           </dl>
         </div>
       </article>
+
+      {eigener && <AnfragenListe itemId={id} anfragen={anfragen} aktion={anfrageBeantworten} />}
     </main>
   );
 }

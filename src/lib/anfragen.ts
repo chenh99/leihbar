@@ -16,10 +16,8 @@ export async function holeAnfrageStand(itemId: string): Promise<AnfrageStand> {
   const { data: sitzung } = await supabase.auth.getClaims();
   const userId = sitzung?.claims?.sub;
 
-  const { count, error } = await supabase
-    .from("requests")
-    .select("id", { count: "exact", head: true })
-    .eq("item_id", itemId);
+  // Die Zahl kommt aus einer Datenbank-Funktion: Sie verrät nur die Anzahl, nicht wer angefragt hat.
+  const { data: anzahl, error } = await supabase.rpc("anzahl_anfragen", { p_item_id: itemId });
   if (error) throw new Error(`Anfragen konnten nicht gezählt werden: ${error.message}`);
 
   let angefragt: boolean | undefined;
@@ -34,11 +32,15 @@ export async function holeAnfrageStand(itemId: string): Promise<AnfrageStand> {
     angefragt = Boolean(data);
   }
 
-  return { anzahl: count ?? 0, angefragt };
+  return { anzahl: anzahl ?? 0, angefragt };
 }
 
+export type AnfrageStatus = "offen" | "angenommen" | "abgelehnt";
+
+export type MeineAnfrage = { gegenstand: Gegenstand; status: AnfrageStatus };
+
 /** Die Gegenstände, die die angemeldete Person angefragt hat – die neueste Anfrage zuerst. */
-export async function holeMeineAnfragen(): Promise<Gegenstand[]> {
+export async function holeMeineAnfragen(): Promise<MeineAnfrage[]> {
   const supabase = await createClient();
   const { data: sitzung } = await supabase.auth.getClaims();
   const userId = sitzung?.claims?.sub;
@@ -46,11 +48,47 @@ export async function holeMeineAnfragen(): Promise<Gegenstand[]> {
 
   const { data, error } = await supabase
     .from("requests")
-    .select(`created_at, items(${spalten})`)
+    .select(`created_at, status, items(${spalten})`)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(`Anfragen konnten nicht geladen werden: ${error.message}`);
 
-  return (data as unknown as { items: ItemZeile | null }[])
-    .flatMap((zeile) => (zeile.items ? [zuGegenstand(zeile.items)] : []));
+  return (data as unknown as { status: AnfrageStatus; items: ItemZeile | null }[]).flatMap(
+    (zeile) => (zeile.items ? [{ gegenstand: zuGegenstand(zeile.items), status: zeile.status }] : []),
+  );
+}
+
+export type AnfrageAnMich = {
+  id: string;
+  email: string;
+  status: AnfrageStatus;
+};
+
+/** Ob die angemeldete Person den Gegenstand angeboten hat. */
+export async function istBesitzerin(itemId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: sitzung } = await supabase.auth.getClaims();
+  const userId = sitzung?.claims?.sub;
+  if (!userId) return false;
+
+  const { data, error } = await supabase
+    .from("items")
+    .select("id")
+    .eq("id", itemId)
+    .eq("owner_id", userId)
+    .maybeSingle();
+  if (error) throw new Error(`Besitzer*in konnte nicht geprüft werden: ${error.message}`);
+  return Boolean(data);
+}
+
+/** Alle Anfragen zu einem Gegenstand – nur für die Besitzer*in (die Datenbank erlaubt es sonst nicht). */
+export async function holeAnfragenZuGegenstand(itemId: string): Promise<AnfrageAnMich[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("requests")
+    .select("id, email, status")
+    .eq("item_id", itemId)
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(`Anfragen konnten nicht geladen werden: ${error.message}`);
+  return data as AnfrageAnMich[];
 }
