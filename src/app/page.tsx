@@ -1,10 +1,17 @@
+import Link from "next/link";
 import { Hand, Recycle, Search } from "lucide-react";
 import FeatureCard from "@/components/FeatureCard";
 import GegenstandKarte from "@/components/GegenstandKarte";
-import { gegenstaende } from "@/data/gegenstaende";
+import KategorieFilter from "@/components/KategorieFilter";
+import { gegenstaende, kategorien, type Kategorie } from "@/data/gegenstaende";
 
-export default function Home() {
-  const verfuegbare = gegenstaende.filter((gegenstand) => gegenstand.verfuegbar);
+export default async function Home({ searchParams }: PageProps<"/">) {
+  const { kategorie } = await searchParams;
+  // Unbekannte oder mehrfache Werte in der Adresse zählen als „Alle“.
+  const aktiv = kategorien.find((k): k is Kategorie => k === kategorie);
+  const verfuegbare = gegenstaende.filter(
+    (gegenstand) => gegenstand.verfuegbar && (!aktiv || gegenstand.kategorie === aktiv),
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-12 sm:block">
@@ -51,7 +58,8 @@ export default function Home() {
       </section>
 
       <section id="gegenstaende" className="scroll-mt-4">
-        <h2 className="mb-6 text-2xl font-semibold">Gerade verfügbar</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Gerade verfügbar</h2>
+        <KategorieFilter aktiv={aktiv} />
         {verfuegbare.length > 0 ? (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {verfuegbare.map((gegenstand, index) => (
@@ -62,11 +70,18 @@ export default function Home() {
           </ul>
         ) : (
           <p className="text-muted">
-            Gerade ist nichts verfügbar. Schau bald wieder vorbei oder{" "}
-            <a href="#" className="inline-flex min-h-11 items-center font-medium text-foreground underline">
-              geh zurück zum Seitenanfang
-            </a>
-            .
+            {aktiv
+              ? `In der Kategorie „${aktiv}“ ist gerade nichts verfügbar. `
+              : "Gerade ist nichts verfügbar. Schau bald wieder vorbei. "}
+            {aktiv && (
+              <Link
+                href="/#gegenstaende"
+                scroll={false}
+                className="inline-flex min-h-11 items-center font-medium text-foreground underline"
+              >
+                Alle Kategorien anzeigen
+              </Link>
+            )}
           </p>
         )}
       </section>
