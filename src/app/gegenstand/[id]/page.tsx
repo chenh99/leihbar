@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import GegenstandBild from "@/components/GegenstandBild";
 import { holeGegenstand } from "@/lib/gegenstaende";
+import AnfrageButton from "@/components/AnfrageButton";
+import { holeAnfrageStand } from "@/lib/anfragen";
 import { preisText } from "@/lib/format";
+import { anfrageUmschalten } from "./actions";
 
 export async function generateMetadata({
   params,
@@ -18,6 +21,8 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
   const { id } = await params;
   const gegenstand = await holeGegenstand(id);
   if (!gegenstand) notFound();
+
+  const { anzahl, angefragt } = await holeAnfrageStand(id);
 
   const { titel, kategorie, beschreibung, besitzer, ort, preisProTag, verfuegbar, bild } =
     gegenstand;
@@ -53,6 +58,12 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
               Dieser Gegenstand ist gerade verliehen.
             </p>
           )}
+          <div className="flex flex-col gap-2">
+            <AnfrageButton itemId={id} angefragt={angefragt === true} aktion={anfrageUmschalten} />
+            <p className="text-muted">
+              Anfragen: <span className="font-medium text-foreground">{anzahl}</span>
+            </p>
+          </div>
           <p className="text-lg">{beschreibung}</p>
           <dl className="space-y-1 text-muted">
             <div className="flex gap-1">
