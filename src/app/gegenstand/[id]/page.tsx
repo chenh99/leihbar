@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import GegenstandBild from "@/components/GegenstandBild";
 import { holeGegenstand } from "@/lib/gegenstaende";
 import AnfrageButton from "@/components/AnfrageButton";
+import AnfrageZaehler from "@/components/AnfrageZaehler";
 import { holeAnfrageStand } from "@/lib/anfragen";
 import { preisText } from "@/lib/format";
 import { anfrageUmschalten } from "./actions";
@@ -60,9 +61,7 @@ export default async function GegenstandSeite({ params }: PageProps<"/gegenstand
           )}
           <div className="flex flex-col gap-2">
             <AnfrageButton itemId={id} angefragt={angefragt === true} aktion={anfrageUmschalten} />
-            <p className="text-muted">
-              Anfragen: <span className="font-medium text-foreground">{anzahl}</span>
-            </p>
+            <AnfrageZaehler itemId={id} anzahl={anzahl} />
           </div>
           <p className="text-lg">{beschreibung}</p>
           <dl className="space-y-1 text-muted">
