@@ -1,0 +1,24 @@
+name: Prüfung
+
+# Zeigt bei jedem Push und Pull Request, dass die App Lint und Build besteht.
+# Der Playwright-Test läuft hier bewusst nicht: Er braucht die echte Datenbank.
+on:
+  push:
+  pull_request:
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    env:
+      # Platzhalter, keine echten Werte: Der Build muss nur starten können, er fragt die Datenbank nicht ab.
+      NEXT_PUBLIC_SUPABASE_URL: https://platzhalter.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_platzhalter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
