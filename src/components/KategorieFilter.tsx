@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
 import { LayoutGrid, Laptop, Shirt, Sofa, Tent, type LucideIcon } from "lucide-react";
 import { kategorien, type Kategorie } from "@/data/gegenstaende";
 
@@ -16,9 +19,10 @@ const icons: Record<Kategorie, LucideIcon> = {
 };
 
 // Die Kategorien sind kleine Reiter-Zettel: der gewählte ist mintgrün und hängt etwas schief.
-const basis = "inline-flex min-h-11 items-center gap-2 px-4 font-medium transition";
+// Der mintgrüne Zettel ist ein eigenes Element hinter dem Text und gleitet beim Wechsel zum neuen Reiter.
+const basis = "relative inline-flex min-h-11 items-center gap-2 px-4 font-medium transition";
 const inaktiv = "border border-wand-linie text-wand-text hover:border-wand-text";
-const aktivKlassen = "zettel zettel-mint -rotate-2";
+const aktivKlassen = "border border-transparent";
 
 function Reiter({
   href,
@@ -38,8 +42,16 @@ function Reiter({
       aria-current={aktiv ? "true" : undefined}
       className={`${basis} ${aktiv ? aktivKlassen : inaktiv}`}
     >
-      <Icon aria-hidden className="size-4.5 shrink-0" />
-      {children}
+      {aktiv && (
+        <motion.span
+          layoutId="aktiver-reiter"
+          aria-hidden
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="zettel zettel-mint pointer-events-none absolute inset-0 -rotate-2"
+        />
+      )}
+      <Icon aria-hidden className="relative size-4.5 shrink-0" />
+      <span className="relative">{children}</span>
     </Link>
   );
 }
